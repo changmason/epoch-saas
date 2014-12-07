@@ -3,14 +3,14 @@
 
 ## 2.1 Planning the application
 New rails project
-```
+```shell
 $ cd ~/workspace
 $ rails _4.2.0.rc2_ new toy_app
 $ cd toy_app/
 ```
 
-Update Gemfile
-```
+Update `Gemfile`
+```ruby
 source 'https://rubygems.org'
 
 gem 'rails',        '4.2.0.rc2'
@@ -36,25 +36,25 @@ end
 ```
 
 and lock the gems
-```
+```shell
 $ bundle install --without production
 ```
 
 Init the repo and commit
-```
+```shell
 $ git init
 $ git add -A
 $ git commit -m "Initialize repository"
 ```
 
 Push to remote
-```
+```shell
 $ git remote add origin git@bitbucket.org:<username>/toy_app.git
 $ git push -u origin --all # pushes up the repo and its refs for the first time
 ```
 
 Create hello action
-```
+```ruby
 # app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
@@ -68,18 +68,18 @@ end
 ```
 
 Update root path
-```
+```ruby
 config/routes.rb
- Rails.application.routes.draw do
-  .
+  Rails.application.routes.draw do
+  ...
   # You can have the root of your site routed with "root"
   **root 'application#hello'**
-  .
+  ...
 end
 ```
 
 Commit then push to heroku
-```
+```shell
 $ git commit -am "Add hello"
 $ heroku create
 $ git push heroku master
@@ -95,7 +95,7 @@ We’ll see how this `user_id` attribute allows us to succinctly express the not
 
 ## 2.2 The Users resource
 Use the `scaffold` generator to generate the Users resource
-```
+```shell
 $ rails generate scaffold User name:string email:string
       invoke  active_record
       create    db/migrate/20140821011110_create_users.rb
@@ -107,7 +107,7 @@ $ rails generate scaffold User name:string email:string
 ```
 
 Migrate the database
-```
+```shell
 $ bundle exec rake db:migrate
 ==  CreateUsers: migrating ====================================================
 -- create_table(:users)
@@ -116,7 +116,7 @@ $ bundle exec rake db:migrate
 ```
 
 Then start the server
-```
+```shell
 $ rails server -b $IP -p $PORT    # Use only `rails server` if running locally
 ```
 
@@ -144,7 +144,7 @@ Summary of the steps
 
 Remove the `hello` action from `application` controller, and update root route
 See users resource
-```
+```ruby
 # config/routes.rb
 Rails.application.routes.draw do
   resources :users
@@ -154,7 +154,7 @@ end
 ```
 
 The `UsersController` overview
-```
+```ruby
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
   def index
@@ -188,6 +188,7 @@ end
 ```
 
 RESTful route mapping about the Users resource
+
 | HTTP request | URL           | Action  | Purpose                     |
 |--------------|---------------|---------|-----------------------------|
 | GET          | /users        | index   | page to list all users      |
@@ -211,7 +212,7 @@ Pick one route, and take a look at the controller, model and view code.
 
 ### 2.3.1 A micropost microtour
 Use `rails generate` to generate the Microposts resource
-```
+```shell
 $ rails generate scaffold Micropost content:text user_id:integer
       invoke  active_record
       create    db/migrate/20140821012832_create_microposts.rb
@@ -225,7 +226,7 @@ $ rails generate scaffold Micropost content:text user_id:integer
 ```
 
 Migrate the database again
-```
+```shell
 $ bundle exec rake db:migrate
 ==  CreateMicroposts: migrating ===============================================
 -- create_table(:microposts)
@@ -234,6 +235,7 @@ $ bundle exec rake db:migrate
 ```
 
 RESTful route mapping about the Microposts resource
+
 | HTTP request | URL                | Action  | Purpose                          |
 |--------------|--------------------|---------|----------------------------------|
 | GET          | /microposts        | index   | page to list all microposts      |
@@ -245,7 +247,7 @@ RESTful route mapping about the Microposts resource
 | DELETE       | /microposts/1      | destroy | delete micropost with id 1       |
 
 The `MicropostsController` overview
-```
+```ruby
 # app/controllers/microposts_controller.rb
 class MicropostsController < ApplicationController
   def index
@@ -280,7 +282,7 @@ end
 
 ### 2.3.2 Putting the micro in microposts
 Limit the length of the post content
-```
+```ruby
 # app/models/micropost.rb
 class Micropost < ActiveRecord::Base
   **validates :content, length: { maximum: 140 }**
@@ -290,13 +292,136 @@ end
 [fig 2.14](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_length_error_3rd_edition.png "Error messages for a failed micropost creation.")
 
 ### 2.3.3 A user has_many microposts
+Associate the User and Micropost models
+[fig 2.15](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_user_association.png "The association between microposts and users")
+
+Declare a `has_many` association for User
+```ruby
+# app/models/user.rb
+class User < ActiveRecord::Base
+  **has_many :microposts**
+end
+```
+
+Declare a `belongs_to` association for Micropost
+```ruby
+# app/models/micropost.rb
+class Micropost < ActiveRecord::Base
+  **belongs_to :user**
+  validates :content, length: { maximum: 140 }
+end
+```
+
+Experiment in console
+```shell
+$ rails console
+>> first_user = User.first
+=> #<User id: 1, name: "Michael Hartl", email: "michael@example.org",
+created_at: "2014-07-21 02:01:31", updated_at: "2014-07-21 02:01:31">
+>> first_user.microposts
+=> [#<Micropost id: 1, content: "First micropost!", user_id: 1, created_at:
+"2014-07-21 02:37:37", updated_at: "2014-07-21 02:37:37">, #<Micropost id: 2,
+content: "Second micropost", user_id: 1, created_at: "2014-07-21 02:38:54",
+updated_at: "2014-07-21 02:38:54">]
+>> micropost = first_user.microposts.first    # Micropost.first would also work.
+=> #<Micropost id: 1, content: "First micropost!", user_id: 1, created_at:
+"2014-07-21 02:37:37", updated_at: "2014-07-21 02:37:37">
+>> micropost.user
+=> #<User id: 1, name: "Michael Hartl", email: "michael@example.org",
+created_at: "2014-07-21 02:01:31", updated_at: "2014-07-21 02:01:31">
+>> exit
+```
 
 ### 2.3.4 Inheritance hierarchies
+Inheritance relationship of the models
+```ruby
+# app/models/user.rb
+class User < ActiveRecord::Base
+  ...
+end
+```
+
+```ruby
+# app/models/micropost.rb
+class Micropost < ActiveRecord::Base
+  ...
+end
+```
+
+[fig 2.16](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_model_inheritance.png "The inheritance hierarchy for the User and Micropost models")
+
+Inheritance relationship of controllers
+```ruby
+# app/controllers/users_controller.rb
+class UsersController < ApplicationController
+  ...
+end
+```
+
+```ruby
+# app/controllers/microposts_controller.rb
+class MicropostsController < ApplicationController
+  ...
+end
+```
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  ...
+end
+```
+
+[fig 2.17](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_controller_inheritance.png "The inheritance hierarchy for the Users and Microposts controllers")
 
 ### 2.3.5 Deploying the toy app
+Commit and backup to remote first
+```shell
+$ git status
+$ git add -A
+$ git commit -m "Finish toy app"
+$ git push
+```
+
+Deploy to heroku
+```shell
+$ git push heroku
+```
+
+and migrate the database on heroku
+```shell
+$ heroku run rake db:migrate
+```
 
 ## 2.4 Conclusion
+**Strengths**
+  - High-level overview of Rails
+  - Introduction to MVC
+  - First taste of the REST architecture
+  - Beginning data modeling
+  - A live, database-backed web application in production
+
+**Weaknesses**
+  - No custom layout or styling
+  - No static pages (such as “Home” or “About”)
+  - No user passwords
+  - No user images
+  - No logging in
+  - No security
+  - No automatic user/micropost association
+  - No notion of “following” or “followed”
+  - No micropost feed
+  - No meaningful tests
+  - No real understanding
 
 ### 2.4.1 What we learned in this chapter
+  - Scaffolding automatically creates code to model data and interact with it through the web.
+  - Scaffolding is good for getting started quickly but is bad for understanding.
+  - Rails uses the Model-View-Controller (MVC) pattern for structuring web applications.
+  - As interpreted by Rails, the REST architecture includes a standard set of URLs and controller actions for interacting with data models.
+  - Rails supports data validations to place constraints on the values of data model attributes.
+  - Rails comes with built-in functions for defining associations between different data models.
+  - We can interact with Rails applications at the command line using the Rails console.
 
 ## 2.5 Exercises
+Please refer to the book!
