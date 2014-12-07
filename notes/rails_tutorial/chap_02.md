@@ -1,7 +1,7 @@
 class: center, middle
 
 # Chapter 2 A toy app
-  A high-level overview of Ruby on Rails programming (and web development in general) by rapidly generating an application using scaffold generators
+A high-level overview of Ruby on Rails programming (and web development in general) by rapidly generating an application using scaffold generators
 
 ---
 
@@ -85,8 +85,8 @@ end
 
 Update root path
 ```ruby
-config/routes.rb
-  Rails.application.routes.draw do
+# config/routes.rb
+Rails.application.routes.draw do
   ...
   # You can have the root of your site routed with "root"
   **root 'application#hello'**
@@ -179,7 +179,6 @@ Summary of the steps
 ---
 
 Remove the `hello` action from `application` controller, and update root route
-See users resource
 ```ruby
 # config/routes.rb
 Rails.application.routes.draw do
