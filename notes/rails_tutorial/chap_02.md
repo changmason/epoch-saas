@@ -1,5 +1,9 @@
+class: center, middle
+
 # Chapter 2 A toy app
   A high-level overview of Ruby on Rails programming (and web development in general) by rapidly generating an application using scaffold generators
+
+---
 
 ## 2.1 Planning the application
 New rails project
@@ -8,6 +12,8 @@ $ cd ~/workspace
 $ rails _4.2.0.rc2_ new toy_app
 $ cd toy_app/
 ```
+
+---
 
 Update `Gemfile`
 ```ruby
@@ -35,10 +41,14 @@ group :production do
 end
 ```
 
+---
+
 and lock the gems
 ```shell
 $ bundle install --without production
 ```
+
+---
 
 Init the repo and commit
 ```shell
@@ -47,11 +57,15 @@ $ git add -A
 $ git commit -m "Initialize repository"
 ```
 
+---
+
 Push to remote
 ```shell
 $ git remote add origin git@bitbucket.org:<username>/toy_app.git
 $ git push -u origin --all # pushes up the repo and its refs for the first time
 ```
+
+---
 
 Create hello action
 ```ruby
@@ -67,6 +81,8 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+---
+
 Update root path
 ```ruby
 config/routes.rb
@@ -78,6 +94,8 @@ config/routes.rb
 end
 ```
 
+---
+
 Commit then push to heroku
 ```shell
 $ git commit -am "Add hello"
@@ -85,13 +103,19 @@ $ heroku create
 $ git push heroku master
 ```
 
+---
+
 ### 2.1.1 A toy model for users
 The user model/table
-[fig 2.2](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_user_model.png "The data model for users")
+![fig 2.2](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_user_model.png "The data model for users")
+
+---
 
 ### 2.1.2 A toy model for microposts
-[fig 2.3](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_micropost_model.png, "The data model for microposts")
+![fig 2.3](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_micropost_model.png, "The data model for microposts")
 We’ll see how this `user_id` attribute allows us to succinctly express the notion that a user potentially has many associated microposts.
+
+---
 
 ## 2.2 The Users resource
 Use the `scaffold` generator to generate the Users resource
@@ -106,6 +130,8 @@ $ rails generate scaffold User name:string email:string
       ...
 ```
 
+---
+
 Migrate the database
 ```shell
 $ bundle exec rake db:migrate
@@ -115,10 +141,14 @@ $ bundle exec rake db:migrate
 ==  CreateUsers: migrated (0.0018s) ===========================================
 ```
 
+---
+
 Then start the server
 ```shell
 $ rails server -b $IP -p $PORT    # Use only `rails server` if running locally
 ```
+
+---
 
 ### 2.2.1 A user tour
 Available paths/pages
@@ -129,8 +159,12 @@ Available paths/pages
 | /users/new    | new    | page to make a new user     |
 | /users/1/edit | edit   | page to edit user with id 1 |
 
+---
+
 ### 2.2.2 MVC in action
-[fig 2.11](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/mvc_detailed.png "A detailed diagram of MVC in Rails")
+![fig 2.11](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/mvc_detailed.png "A detailed diagram of MVC in Rails")
+
+---
 
 Summary of the steps
   1. The browser issues a request for the /users URL.
@@ -142,6 +176,8 @@ Summary of the steps
   7. The view uses embedded Ruby to render the page as HTML.
   8. The controller passes the HTML back to the browser.
 
+---
+
 Remove the `hello` action from `application` controller, and update root route
 See users resource
 ```ruby
@@ -152,6 +188,8 @@ Rails.application.routes.draw do
   .
 end
 ```
+
+---
 
 The `UsersController` overview
 ```ruby
@@ -187,6 +225,8 @@ class UsersController < ApplicationController
 end
 ```
 
+---
+
 RESTful route mapping about the Users resource
 
 | HTTP request | URL           | Action  | Purpose                     |
@@ -199,7 +239,11 @@ RESTful route mapping about the Users resource
 | PATCH        | /users/1      | update  | update user with id 1       |
 | DELETE       | /users/1      | destroy | delete user with id 1       |
 
+---
+
 Pick one route, and take a look at the controller, model and view code.
+
+---
 
 ### 2.2.3 Weaknesses of this Users resource
   - **No data validations.** Our User model accepts data such as blank names and invalid email addresses without complaint.
@@ -208,7 +252,11 @@ Pick one route, and take a look at the controller, model and view code.
   - **No style or layout.** There is no consistent site styling or navigation.
   - **No real understanding.** If you understand the scaffold code, you probably shouldn’t be reading this book.
 
+---
+
 ## 2.3 The Microposts resource
+
+---
 
 ### 2.3.1 A micropost microtour
 Use `rails generate` to generate the Microposts resource
@@ -225,6 +273,8 @@ $ rails generate scaffold Micropost content:text user_id:integer
        ...
 ```
 
+---
+
 Migrate the database again
 ```shell
 $ bundle exec rake db:migrate
@@ -233,6 +283,8 @@ $ bundle exec rake db:migrate
    -> 0.0023s
 ==  CreateMicroposts: migrated (0.0026s) ======================================
 ```
+
+---
 
 RESTful route mapping about the Microposts resource
 
@@ -245,6 +297,8 @@ RESTful route mapping about the Microposts resource
 | GET          | /microposts/1/edit | edit    | page to edit micropost with id 1 |
 | PATCH        | /microposts/1      | update  | update micropost with id 1       |
 | DELETE       | /microposts/1      | destroy | delete micropost with id 1       |
+
+---
 
 The `MicropostsController` overview
 ```ruby
@@ -280,6 +334,8 @@ class MicropostsController < ApplicationController
 end
 ```
 
+---
+
 ### 2.3.2 Putting the micro in microposts
 Limit the length of the post content
 ```ruby
@@ -289,11 +345,17 @@ class Micropost < ActiveRecord::Base
 end
 ```
 
-[fig 2.14](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_length_error_3rd_edition.png "Error messages for a failed micropost creation.")
+---
+
+![fig 2.14](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_length_error_3rd_edition.png "Error messages for a failed micropost creation.")
+
+---
 
 ### 2.3.3 A user has_many microposts
 Associate the User and Micropost models
-[fig 2.15](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_user_association.png "The association between microposts and users")
+![fig 2.15](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/micropost_user_association.png "The association between microposts and users")
+
+---
 
 Declare a `has_many` association for User
 ```ruby
@@ -303,6 +365,8 @@ class User < ActiveRecord::Base
 end
 ```
 
+---
+
 Declare a `belongs_to` association for Micropost
 ```ruby
 # app/models/micropost.rb
@@ -311,6 +375,8 @@ class Micropost < ActiveRecord::Base
   validates :content, length: { maximum: 140 }
 end
 ```
+
+---
 
 Experiment in console
 ```shell
@@ -332,6 +398,8 @@ created_at: "2014-07-21 02:01:31", updated_at: "2014-07-21 02:01:31">
 >> exit
 ```
 
+---
+
 ### 2.3.4 Inheritance hierarchies
 Inheritance relationship of the models
 ```ruby
@@ -348,7 +416,11 @@ class Micropost < ActiveRecord::Base
 end
 ```
 
-[fig 2.16](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_model_inheritance.png "The inheritance hierarchy for the User and Micropost models")
+---
+
+![fig 2.16](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_model_inheritance.png "The inheritance hierarchy for the User and Micropost models")
+
+---
 
 Inheritance relationship of controllers
 ```ruby
@@ -372,7 +444,11 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-[fig 2.17](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_controller_inheritance.png "The inheritance hierarchy for the Users and Microposts controllers")
+---
+
+![fig 2.17](https://softcover.s3.amazonaws.com/636/ruby_on_rails_tutorial_3rd_edition/images/figures/demo_controller_inheritance.png "The inheritance hierarchy for the Users and Microposts controllers")
+
+---
 
 ### 2.3.5 Deploying the toy app
 Commit and backup to remote first
@@ -382,6 +458,8 @@ $ git add -A
 $ git commit -m "Finish toy app"
 $ git push
 ```
+
+---
 
 Deploy to heroku
 ```shell
@@ -393,6 +471,8 @@ and migrate the database on heroku
 $ heroku run rake db:migrate
 ```
 
+---
+
 ## 2.4 Conclusion
 **Strengths**
   - High-level overview of Rails
@@ -400,6 +480,8 @@ $ heroku run rake db:migrate
   - First taste of the REST architecture
   - Beginning data modeling
   - A live, database-backed web application in production
+
+---
 
 **Weaknesses**
   - No custom layout or styling
@@ -414,6 +496,8 @@ $ heroku run rake db:migrate
   - No meaningful tests
   - No real understanding
 
+---
+
 ### 2.4.1 What we learned in this chapter
   - Scaffolding automatically creates code to model data and interact with it through the web.
   - Scaffolding is good for getting started quickly but is bad for understanding.
@@ -422,6 +506,8 @@ $ heroku run rake db:migrate
   - Rails supports data validations to place constraints on the values of data model attributes.
   - Rails comes with built-in functions for defining associations between different data models.
   - We can interact with Rails applications at the command line using the Rails console.
+
+---
 
 ## 2.5 Exercises
 Please refer to the book!
