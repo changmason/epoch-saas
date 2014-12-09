@@ -44,6 +44,8 @@ group :production do
 end
 ```
 
+---
+
 and lock the gems
 ```shell
 $ bundle install --without production
@@ -78,6 +80,8 @@ Learn Web Development with Rails*](http://www.railstutorial.org/)
 by [Michael Hartl](http://www.michaelhartl.com/).
 ```
 
+---
+
 Commit the changes
 ```shell
 $ git commit -am "Improve the README"
@@ -96,12 +100,16 @@ $ heroku create
 $ git push heroku master
 ```
 
+---
+
 ## 3.2 Static pages
 Start a new branch to develop static-pages
 ```shell
 $ git checkout master
 $ git checkout -b static-pages
 ```
+
+---
 
 ### 3.2.1 Generated static pages
 Use `rails generate` to generate the `controller` with specified actions
@@ -119,7 +127,7 @@ $ rails generate controller StaticPages home help
 
 ---
 
-Some commands with handy shortcuts
+Some commands have handy shortcuts
 
 | Full command     | Shortcut  |
 |------------------|-----------|
